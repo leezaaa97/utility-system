@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard - Utility Management System</title>
+    
+    <link rel="stylesheet" href="./assets/css/manager.css">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>DASH</h2>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <h3>Reports Center</h3>
+                    <ul>
+                        <li class="active" onclick="switchView('dashboard', this)">
+                            <span>Dashboard Home</span>
+                        </li>
+                        <li onclick="switchView('daily-revenue', this)">Daily Revenue</li>
+                        <li onclick="switchView('monthly-usage', this)">Monthly Usage Trends</li>
+                        <li onclick="switchView('annual-performance', this)">Annual Performance</li>
+                        <li onclick="switchView('top-consumers', this)">Top Consumers</li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Export Center</h3>
+                    <ul>
+                        <li onclick="switchView('export-center', this)">Export Data</li>
+                    </ul>
+                </div>
+
+                <div class="nav-footer">
+                    <ul>
+                        <li class="logout" onclick="logout()">Log Out</li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            
+            <section id="dashboard" class="view-section">
+                <div class="header">
+                    <h1>Manager Dashboard</h1>
+                </div>
+
+                <h2>Revenue Summary</h2>
+                <div class="dashboard-cards">
+                    <div class="card summary-card">
+                        <div class="card-top">
+                            <i class="ph ph-list-dashes icon-lg"></i>
+                            <div class="value">45,000</div>
+                            <div class="label">Daily Revenue</div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="miniChartDaily"></canvas>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card-top">
+                            <i class="ph ph-squares-four icon-lg"></i>
+                            <div class="value">670,000</div>
+                            <div class="label">Monthly Revenue</div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="miniChartMonthly"></canvas>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card-top">
+                            <i class="ph ph-calculator icon-lg"></i>
+                            <div class="value">6,650,320</div>
+                            <div class="label">Yearly Revenue</div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="miniChartYearly"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Quick Access</h2>
+                <div class="quick-access">
+                    <button onclick="switchView('daily-revenue')">Reports Center <i class="ph ph-arrow-square-out"></i></button>
+                    <button onclick="switchView('export-center')">Export Center <i class="ph ph-arrow-square-out"></i></button>
+                    <button onclick="switchView('top-consumers')">Top Consumers <i class="ph ph-arrow-square-out"></i></button>
+                </div>
+            </section>
+
+            <section id="daily-revenue" class="view-section hidden">
+                <div class="header">
+                    <h1>Reports Center</h1>
+                </div>
+                
+                <h3>Daily Revenue Report</h3>
+                <div class="controls-row">
+                    <input type="date" id="dailyDate" class="input-field">
+                    <button class="btn-primary" onclick="generateDailyReport()">Generate Report</button>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="card kpi-card">
+                        <span class="kpi-label">Total Revenue</span>
+                        <span class="kpi-value">79,000</span>
+                        <div class="kpi-icon"><i class="ph ph-chart-bar"></i></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <span class="kpi-label">No. of Payments</span>
+                        <span class="kpi-value">79000</span>
+                        <div class="kpi-icon"><i class="ph ph-hand-coins"></i></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <span class="kpi-label">Top Consumer</span>
+                        <span class="kpi-value">79000</span>
+                        <div class="kpi-icon"><i class="ph ph-users-three"></i></div>
+                    </div>
+                </div>
+
+                <h3>Payment Log</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>NIC</th>
+                                <th>Type</th>
+                                <th>Utility Type</th>
+                                <th>Meter ID</th>
+                                <th>Rate per Unit</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dailyRevenueTable">
+                            </tbody>
+                    </table>
+                </div>
+                <a href="#" class="export-link" onclick="redirectToExport('Daily Revenue')">Export as PDF <i class="ph ph-arrow-square-out"></i></a>
+            </section>
+
+            <section id="monthly-usage" class="view-section hidden">
+                <div class="header">
+                    <h1>Reports Center</h1>
+                    <div class="current-date">
+                        <h3>2025</h3>
+                        <p>November</p>
+                    </div>
+                </div>
+
+                <h3>Monthly Usage Trends</h3>
+                <div class="controls-row">
+                    <select class="input-field">
+                        <option>Select Month</option>
+                        <option>November</option>
+                        <option>December</option>
+                    </select>
+                    <button class="btn-primary" onclick="fetchMonthlyUsage()">View Usage</button>
+                </div>
+
+                <div class="chart-large-container card">
+                    <canvas id="monthlyUsageChart"></canvas>
+                    <p class="chart-caption">Multi-bar chart showing usage for all three utilities</p>
+                </div>
+                <div class="text-right">
+                    <a href="#" class="small-link">Compare with previous month <i class="ph ph-arrow-square-out"></i></a>
+                </div>
+
+                <h3>Individual Customer Consumption</h3>
+                <div class="controls-row">
+                    <input type="text" placeholder="Enter NIC" class="input-field search-input">
+                    <button class="btn-primary">View Usage</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Utility Type</th>
+                                <th>Units per Utility</th>
+                                <th>Charge per Utility</th>
+                                <th>Total Units Used</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Domestic</td>
+                                <td><span class="badge electricity">Electricity</span></td>
+                                <td>120</td>
+                                <td>$45.00</td>
+                                <td rowspan="3" style="vertical-align: middle;">350</td>
+                                <td rowspan="3" style="vertical-align: middle; font-weight:bold;">$130.00</td>
+                            </tr>
+                            <tr>
+                                <td>Domestic</td>
+                                <td><span class="badge water">Water</span></td>
+                                <td>150</td>
+                                <td>$35.00</td>
+                            </tr>
+                            <tr>
+                                <td>Domestic</td>
+                                <td><span class="badge gas">Gas</span></td>
+                                <td>80</td>
+                                <td>$50.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="#" class="export-link" onclick="redirectToExport('Monthly Usage')">Export as PDF <i class="ph ph-arrow-square-out"></i></a>
+            </section>
+
+            <section id="annual-performance" class="view-section hidden">
+                <div class="header">
+                    <h1>Reports Center</h1>
+                </div>
+
+                <h3>Annual Performance</h3>
+                <div class="controls-row">
+                    <select class="input-field">
+                        <option>2024</option>
+                        <option>2025</option>
+                    </select>
+                    <button class="btn-primary" onclick="generateAnnualReport()">Generate Report</button>
+                </div>
+
+                <h3>Key Performance Index</h3>
+                <div class="kpi-grid">
+                    <div class="card kpi-card green-tint">
+                        <span class="kpi-label">Total Revenue</span>
+                        <span class="kpi-value">79000</span>
+                        <div class="kpi-icon"><i class="ph ph-chart-line-up"></i></div>
+                    </div>
+                    <div class="card kpi-card green-tint">
+                        <span class="kpi-label">Total Consumption</span>
+                        <span class="kpi-value">79000</span>
+                        <div class="kpi-icon"><i class="ph ph-shield-check"></i></div>
+                    </div>
+                    <div class="card kpi-card green-tint">
+                        <span class="kpi-label">Growth %</span>
+                        <span class="kpi-value">1.5</span>
+                        <div class="kpi-icon"><i class="ph ph-money"></i></div>
+                    </div>
+                </div>
+
+                <div class="chart-large-container card mt-20">
+                    <canvas id="annualAreaChart"></canvas>
+                    <p class="chart-caption">Area chart showing performance over the last twelve months</p>
+                </div>
+                <a href="#" class="export-link" onclick="redirectToExport('Annual Performance')">Export as PDF <i class="ph ph-arrow-square-out"></i></a>
+            </section>
+
+            <section id="top-consumers" class="view-section hidden">
+                <div class="header">
+                    <h1>Reports Center</h1>
+                </div>
+
+                <h3>Top Consumers</h3>
+                <div class="controls-row">
+                    <select class="input-field">
+                        <option>Select Utility</option>
+                        <option>Electricity</option>
+                        <option>Water</option>
+                        <option>Gas</option>
+                    </select>
+                    <select class="input-field">
+                        <option>2024</option>
+                        <option>2025</option>
+                    </select>
+                    <button class="btn-primary" onclick="fetchTopConsumers()">Generate Report</button>
+                </div>
+
+                <h3>2024 - Top 10 Consumers</h3>
+                <div class="top-consumer-layout">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>NIC</th>
+                                    <th>Category</th>
+                                    <th>Contact No.</th>
+                                    <th>Total Units</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topConsumersTable">
+                                </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="consumer-preview card">
+                        <div class="preview-header">
+                            <span>Hide Consumption</span>
+                        </div>
+                        <div class="chart-placeholder-box">
+                            <canvas id="userConsumptionChart"></canvas>
+                        </div>
+                        <p class="chart-caption">Bar chart of user's consumption</p>
+                        <div class="preview-footer">
+                            <button class="btn-dark">View Consumption</button>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="export-link" onclick="redirectToExport('Top Consumers')">Export as PDF <i class="ph ph-arrow-square-out"></i></a>
+            </section>
+
+            <section id="export-center" class="view-section hidden">
+                <div class="header">
+                    <h1>Export Center</h1>
+                </div>
+
+                <div class="export-controls">
+                    <div class="control-group">
+                        <label class="control-label">Report Type</label>
+                        <select id="exportReportType" class="input-field full-width" onchange="updateExportPreview()">
+                            <option value="" disabled selected>Select Type</option>
+                            <option value="Daily Revenue">Daily Revenue</option>
+                            <option value="Monthly Usage">Monthly Usage</option>
+                            <option value="Annual Performance">Annual Performance</option>
+                            <option value="Top Consumers">Top Consumers</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Format</label>
+                        <select id="exportFormat" class="input-field full-width">
+                            <option value="PDF">PDF</option>
+                            <option value="Excel">Excel (.xlsx)</option>
+                        </select>
+                    </div>
+
+                    <div class="date-selectors-row">
+                        
+                        <div class="selector-wrapper">
+                            <select id="exportDay" class="input-field">
+                                <option value="">Select Day</option>
+                                </select>
+                        </div>
+
+                        <div class="selector-wrapper">
+                            <input type="month" id="exportMonth" class="input-field" placeholder="Select Month">
+                        </div>
+
+                        <div class="selector-wrapper year-widget-wrapper">
+                            <div class="input-field year-trigger" onclick="toggleYearWidget()">
+                                <span id="selectedYearDisplay">Select Year</span>
+                                <i class="ph ph-caret-down"></i>
+                            </div>
+                            
+                            <div id="yearWidgetPopup" class="year-picker-popup hidden">
+                                <div class="year-header">
+                                    <i class="ph ph-caret-left"></i>
+                                    <span>Select Year</span>
+                                    <i class="ph ph-caret-right"></i>
+                                </div>
+                                <div class="year-grid">
+                                    <div class="year-option" onclick="selectYear(2020)">2020</div>
+                                    <div class="year-option" onclick="selectYear(2021)">2021</div>
+                                    <div class="year-option" onclick="selectYear(2022)">2022</div>
+                                    <div class="year-option" onclick="selectYear(2023)">2023</div>
+                                    <div class="year-option selected" onclick="selectYear(2024)">2024</div>
+                                    <div class="year-option" onclick="selectYear(2025)">2025</div>
+                                </div>
+                                <div class="year-footer">
+                                    <button class="btn-small-outline" onclick="toggleYearWidget()">Cancel</button>
+                                    <button class="btn-small-dark" onclick="toggleYearWidget()">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="triggerExport()">Export File</button>
+                </div>
+
+                <h3>Preview</h3>
+                <div class="export-preview-box">
+                    <div id="previewPlaceholder" class="preview-content">
+                        <i class="ph ph-file-pdf" style="font-size: 3rem; opacity: 0.5;"></i>
+                        <p id="previewText">Select a report type to view preview</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="./assets/js/manager.js"></script>
+</body>
+</html>
