@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meter Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-dark-blue: #0D2A3D;
+            --color-light-bg: #E9F0F4;
+            --color-blue-btn: #2C82A9;
+            --color-gray-container: #AAB6C1;
+            --color-info-box: #A3C2D1;
+            --color-input-gray: #DDE4E8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-light-bg);
+            height: 100vh;
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            background-color: var(--color-dark-blue);
+            color: white;
+            min-height: 100vh;
+            padding: 30px;
+            position: fixed;
+            height: 100%;
+        }
+
+        .sidebar-brand {
+            font-style: italic;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .main-content-wrapper {
+            margin-left: 16.666667%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .main-content {
+            padding: 40px;
+            width: 100%;
+        }
+
+        .content-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .dash-title {
+            font-weight: 700;
+            color: black;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .search-input-group .input-group-text {
+            background-color: var(--color-input-gray);
+            border: none;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+            color: #6c757d;
+            padding-left: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .search-input-group .form-control {
+            background-color: var(--color-input-gray);
+            border: none;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            padding: 8px 12px;
+            font-style: italic;
+            font-size: 0.9rem;
+            height: 40px;
+        }
+        .search-input-group .form-control:focus {
+            box-shadow: none;
+            background-color: #e2e8ec;
+        }
+
+        .btn-search {
+            background-color: var(--color-blue-btn);
+            color: white;
+            border-radius: 15px;
+            padding: 0 30px;
+            height: 40px;
+            border: none;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-left: 15px;
+        }
+
+        .info-box {
+            background-color: var(--color-info-box);
+            padding: 20px;
+            border-radius: 15px;
+            color: var(--color-dark-blue);
+            font-weight: 500;
+            line-height: 1.7;
+            font-size: 0.9rem;
+            height: 100%;
+        }
+
+        .form-container-gray {
+            background-color: var(--color-gray-container);
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+
+        .form-label-bold {
+            font-weight: 700;
+            color: var(--color-dark-blue);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .dash-input {
+            background-color: var(--color-input-gray);
+            border: none;
+            border-radius: 15px;
+            padding: 5px 15px;
+            height: 40px;
+            font-size: 0.9rem;
+        }
+
+        .dash-input:disabled {
+            background-color: #9aa8b5; 
+            color: #333;
+            cursor: not-allowed;
+            font-weight: 600;
+        }
+
+        .btn-dark-custom {
+            background-color: var(--color-dark-blue);
+            color: white;
+            border-radius: 25px;
+            padding: 8px 30px;
+            border: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            height: 40px;
+        }
+        .btn-dark-custom:hover {
+            background-color: #163b52;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content-wrapper { margin-left: 0; }
+            .main-content { padding: 20px; }
+            .btn-search { margin-left: 10px; padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid p-0">
+        <div class="sidebar col-md-2 d-none d-md-block">
+            <div class="sidebar-brand">DASH</div>
+        </div>
+
+        <div class="main-content-wrapper col-md-10 col-12">
+            <div class="main-content">
+                <div class="content-container">
+                    
+                    <h2 class="dash-title">Meter Reading</h2>
+
+                    <div class="row">
+                        <div class="col-md-7 pe-md-4">
+                            <h5>Add Reading</h5>
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="input-group search-input-group flex-grow-1">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="Search by Meter ID">
+                                </div>
+                                <button class="btn btn-search">Search</button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5 mb-4 mb-md-0">
+                            <div class="info-box d-flex flex-column justify-content-center">
+                                <div>Customer ID:</div>
+                                <div>Meter Status:</div>
+                                <div>Utility type:</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-container-gray">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label-bold">Start date</label>
+                                <input type="date" class="form-control dash-input">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-bold">End date</label>
+                                <input type="date" class="form-control dash-input">
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label-bold">Previous Reading</label>
+                                <input type="number" class="form-control dash-input" value="15420" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-bold">Current Reading</label>
+                                <input type="number" class="form-control dash-input" placeholder="Enter new value">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button class="btn btn-dark-custom fst-italic">Enter Reading</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
