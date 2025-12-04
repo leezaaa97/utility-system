@@ -1,0 +1,10 @@
+Step 01 - Open Microsoft Server Management and Connect To Local Host
+Step 02 - Right Click On Databases and Select Restore Database
+Step 03 - Select Device  And Give the Correct Location of the utility_db.bak file and restore
+
+
+Role Passwords and usernames
+admin = admin
+cashier = cashier
+manager = manager
+officer = officer
