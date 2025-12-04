@@ -21,21 +21,9 @@
             overflow: hidden;
         }
 
-        .full-height {
-            min-height: 100vh;
-        }
-
-        .left-pane {
-            background-color: var(--color-dark-blue);
-            min-height: 100vh;
-        }
-
-        .right-pane {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+        .full-height { min-height: 100vh; }
+        .left-pane { background-color: var(--color-dark-blue); min-height: 100vh; }
+        .right-pane { display: flex; align-items: center; justify-content: center; height: 100vh; }
 
         .login-card {
             background: white;
@@ -46,12 +34,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        .login-title {
-            font-weight: 700;
-            color: var(--color-dark-blue);
-            font-size: 3rem;
-            margin-bottom: 40px;
-        }
+        .login-title { font-weight: 700; color: var(--color-dark-blue); font-size: 3rem; margin-bottom: 40px; }
 
         .login-input {
             border: none;
@@ -62,17 +45,8 @@
             color: var(--color-blue-accent);
             margin-bottom: 30px;
         }
-
-        .login-input::placeholder {
-            color: var(--color-blue-accent);
-            opacity: 1;
-        }
-
-        .login-input:focus {
-            box-shadow: none;
-            border-bottom-color: var(--color-dark-blue);
-            outline: none;
-        }
+        .login-input::placeholder { color: var(--color-blue-accent); opacity: 1; }
+        .login-input:focus { box-shadow: none; border-bottom-color: var(--color-dark-blue); outline: none; }
 
         .btn-dark-custom {
             background-color: var(--color-dark-blue);
@@ -82,10 +56,7 @@
             border: none;
             font-weight: 500;
         }
-        .btn-dark-custom:hover {
-            background-color: #163b52;
-            color: white;
-        }
+        .btn-dark-custom:hover { background-color: #163b52; color: white; }
     </style>
 </head>
 <body>
@@ -99,24 +70,47 @@
                     <h1 class="login-title">Sign-in</h1>
                     <form id="signin-form">
                         <div class="mb-3">
-                            <input type="text" class="form-control login-input" placeholder="Username" required>
+                            <input type="text" id="username" class="form-control login-input" placeholder="Username" required>
                         </div>
                         <div class="mb-4">
-                            <input type="password" class="form-control login-input" placeholder="Password" required>
+                            <input type="password" id="password" class="form-control login-input" placeholder="Password" required>
                         </div>
                         <div class="d-grid gap-2 col-6 mx-auto">
                             <button type="submit" class="btn btn-dark-custom">Sign-in</button>
                         </div>
                     </form>
+                    <p id="error-msg" class="text-danger text-center mt-3" style="display:none;"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('signin-form').addEventListener('submit', function(event) {
+        const loginForm = document.getElementById('signin-form');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('error-msg');
+
+        loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
-            window.location.href = 'public/dashboard_officer.html';
+            
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value.trim();
+
+            console.log("Form Submitted.");
+            console.log("Username captured:", user);
+            console.log("Password captured:", pass);
+
+            // BACKEND TODO: database connection logic
+            // 1. You have access to the variables 'user' and 'pass' above.
+            // 2. Send these to your PHP script (e.g., via fetch/POST).
+            // 3. If login is successful, redirect using:
+            //      window.location.href = 'public/dashboard_officer.html'; (or admin/manager/cashier)
+            // 4. If login fails, display the error:
+            //      errorMsg.style.display = 'block';
+            //      errorMsg.textContent = 'Invalid credentials';
+            
+            alert("Frontend input captured! Check console for values.\n\nBackend connection logic needs to be implemented here.");
         });
     </script>
 </body>
