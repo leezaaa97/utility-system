@@ -8,3 +8,16 @@ admin = admin
 cashier = cashier
 manager = manager
 officer = officer
+
+
+Important Note : MS SQL On our localhost doesn't allow PHP to connect With our database there we need to do some changes to make sure our db_config file gets connected
+with our database.
+
+Step 01 : After you import the utility_db.bak file onto your localhost right click on on the server in the SSMS and Select properties
+Step 02 : Select Security from the left list and there you will find  Server Authentication. By default it is in Windows Authentication, Select SQL Server and Windows Authentication Option
+Step 03 : Click on and restart the server by right clicking the server name and clicking restart
+Step 04 : In the object explorer there is a security folder click and select login folder.
+Step 05 : Inside the login folder at the bottom there is "sa", right click and select properties
+Step 06 : In the General tab add a new password "root" and confirm the password.
+Step 07 : Select the status tab and enable login and finally click ok.
+Step 08 : to check disconnect from the server and when the connection box appears select SQL authentication and put your uername "sa" and password and trust the server certificate.
