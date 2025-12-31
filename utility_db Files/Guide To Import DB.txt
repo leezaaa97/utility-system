@@ -7,6 +7,9 @@ Role Passwords and usernames
 admin = admin
 cashier = cashier
 manager = manager
+<<<<<<< HEAD
+officer = officer
+=======
 officer = officer
 
 
@@ -21,3 +24,4 @@ Step 05 : Inside the login folder at the bottom there is "sa", right click and s
 Step 06 : In the General tab add a new password "root" and confirm the password.
 Step 07 : Select the status tab and enable login and finally click ok.
 Step 08 : to check disconnect from the server and when the connection box appears select SQL authentication and put your uername "sa" and password and trust the server certificate.
+>>>>>>> backend-dev
