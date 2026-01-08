@@ -1,0 +1,83 @@
+body {
+    background-color: #e8f5ff;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    background-color: #10385b;
+    min-height: 100vh;
+    width: 245px;
+    border-radius: 15px;
+    padding: 30px 20px;
+    color: white;
+    margin: 10px;
+}
+
+.sidebar-title { 
+    font-size: 28px; 
+    font-style: italic; 
+    color: white; 
+}
+
+.nav-link { color: rgba(255,255,255,0.8); }
+.nav-link.active { color: white; font-weight: bold; background: rgba(255,255,255,0.1); border-radius: 8px; }
+
+.section-box {
+    background-color: #d5edff;
+    padding: 25px;
+    border-radius: 20px;
+    width: 90%;
+}
+
+.input-box { border-radius: 20px !important; padding: 10px 15px; }
+
+.detail-card {
+    border-radius: 20px;
+    padding: 25px;
+    font-size: 20px;
+    color: #000;
+}
+
+.pay { background-color: #addcff; }
+.lastbill { background-color: #f4b6c2; }
+.status { background-color: #a8e6a3; }
+
+.action-btn { background-color: #062f4f; color: white; border-radius: 15px; padding: 10px 25px; }
+.custom-blue-btn { background-color: #063455; color: white; border-radius: 25px; border: none; }
+
+.table-box {
+    background: #d7ebf7;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.table-wrapper {
+    background-color: #D1E8F0;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.badge-pink { background: #ebb5b5; color: #6f0000; padding: 8px 18px; border-radius: 20px; }
+.badge-green { background: #c2e6b0; color: #1a6100; padding: 8px 18px; border-radius: 20px; }
+.status-complete { background-color: #A7DCA2; padding: 4px 10px; border-radius: 12px; }
+.status-pending { background-color: #EDB1B1; padding: 4px 12px; border-radius: 12px; }
+
+.custom-table, .custom-table th, .custom-table td {
+    background: transparent !important;
+}
+
+.line-table thead th { border-bottom: 1px solid #b5ccd6; padding-bottom: 12px; font-weight: 600; }
+.line-table tbody tr td { border-bottom: 1px solid #b5ccd6; padding: 12px; }
+
+.search-input { background:#92c5e8; border:none; color:#000; border-radius:25px 0 0 25px; }
+.search-btn { background:#062f4f; color:white; border-radius:0 25px 25px 0; }
+.meter-select { border-radius:20px; background:#92c5e8; color:white; }
+.meter-btn { background-color: #8CBED4; color: white; border-radius: 30px; border: none; padding: 6px 18px; }
+
+.payment-modal-content { background-color: #a8d0ff; border-radius: 20px; padding: 20px 30px; }
+.payment-display-box { background-color: #e0efff; width: 70%; border-radius: 15px; border: 2px solid #c2defa; display: flex; align-items: center; justify-content: center; }
+.modal-pay-btn { background-color: #052f4f; color: white; padding: 10px 35px; border-radius: 20px; border: none; }
+
+.logout-link { color: #ff8e8e !important; font-weight: 600; }
+.logout-link:hover { color: #ff5c5c !important; background: rgba(255, 92, 92, 0.1); border-radius: 5px; }
+hr { margin: 1rem 0; }
