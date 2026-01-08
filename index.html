@@ -85,7 +85,7 @@
         </div>
     </div>
 
-    <script>
+<script>
         const loginForm = document.getElementById('signin-form');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
@@ -97,20 +97,34 @@
             const user = usernameInput.value.trim();
             const pass = passwordInput.value.trim();
 
-            console.log("Form Submitted.");
-            console.log("Username captured:", user);
-            console.log("Password captured:", pass);
+            errorMsg.style.display = 'none';
 
-            // BACKEND TODO: database connection logic
-            // 1. You have access to the variables 'user' and 'pass' above.
-            // 2. Send these to your PHP script (e.g., via fetch/POST).
-            // 3. If login is successful, redirect using:
-            //      window.location.href = 'public/dashboard_officer.html'; (or admin/manager/cashier)
-            // 4. If login fails, display the error:
-            //      errorMsg.style.display = 'block';
-            //      errorMsg.textContent = 'Invalid credentials';
-            
-            alert("Frontend input captured! Check console for values.\n\nBackend connection logic needs to be implemented here.");
+            fetch('api/auth.php?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            })
+            .then(response => {
+                return response.json().then(data => {
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Server Error');
+                    }
+                    return data;
+                });
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = data.redirect;
+                } else {
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = data.message || 'Login failed';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = error.message; 
+            });
         });
     </script>
 </body>
