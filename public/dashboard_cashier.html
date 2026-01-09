@@ -3,202 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cashier Dashboard System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>DASH Utility Payment System</title>
     <link rel="stylesheet" href="assets/css/cashier.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="d-flex">
-    <nav class="sidebar d-flex flex-column align-items-center justify-content-between pb-4">
-        <div class="w-100">
-            <h2 class="sidebar-title mt-3 text-center">DASH</h2>
-            <ul class="nav flex-column mt-4 w-100 px-3">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#" onclick="showView('cashier-main')">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showView('payment-history')">Payment History</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showView('usage-history')">Usage History</a>
-                </li>
-            </ul>
-        </div>
-        <div class="w-100 px-3">
-            <hr class="text-white-50">
-            <a class="nav-link logout-link" href="#" onclick="handleLogout()">
-                <i class="bi bi-box-arrow-right me-2"></i> Logout
-            </a>
-        </div>
-    </nav>
+<div class="container">
+    <aside class="sidebar">
+        <h1 class="logo">DASH</h1>
 
-    <main class="flex-grow-1 ms-4 mt-3">
-        <div class="mb-4" style="width:300px;">
-            <div class="input-group">
-                <input type="text" class="form-control search-input" placeholder="Quick search">
-                <button class="btn search-btn"><i class="bi bi-search"></i></button>
-            </div>
-        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item active" id="navIdentify">CUSTOMER DASHBOARD</div>
+            <div class="nav-item" id="navPaymentHist">PAYMENT HISTORY</div>
+            <div class="nav-item" id="navUsageHist">USAGE HISTORY</div>
+        </nav>
+    </aside>
 
-        <section id="cashier-main" class="view-section">
-            <h4 class="fw-bold">Customer Identification</h4>
-            <div class="section-box mt-3">
+    <main class="main-content">
+
+        <header>
+
+        </header>
+
+        <section class="customer-ident">
+            <h2>Customer Identification</h2>
+
+            <div class="search-box">
                 <p>To generate customer details please enter the following details</p>
-                <div class="row g-3">
-                    <div class="col-6">
-                        <input id="customerID" type="text" class="form-control input-box" placeholder="Customer ID" />
-                    </div>
-                    <div class="col-6">
-                        <input type="text" class="form-control input-box" placeholder="Customer Address" />
-                    </div>
-                </div>
-                <div class="mt-4 text-end">
-                    <button id="fetchCustomerBtn" class="btn action-btn">Get Customer Details</button>
+                <div class="input-group">
+                    <input type="text" id="custNicInput" placeholder="Customer NIC">
+                    <button id="btnGetDetails" class="btn-primary">Get Customer Details</button>
                 </div>
             </div>
 
-            <h4 class="mt-5 fw-bold">Customer Details</h4>
-            <div class="mt-3 mb-4 text-end me-5">
-                <select id="meterFilter" class="form-select w-auto d-inline-block meter-select">
-                    <option>Electricity Meter</option>
-                    <option>Water Meter</option>
-                    <option>Gas Meter</option>
+            <div id="customerInfoDisplay" class="customer-info">
+                <p><strong>Customer NIC:</strong> <span id="dispCustNic">-</span></p>
+                <p><strong>Address:</strong> <span id="dispCustAddr">-</span></p>
+            </div>
+        </section>
+
+        <div id="viewDashboard" class="view-section">
+            <div class="details-section">
+                <div class="section-header">
+                    <h2>Customer Details</h2>
+                    <select class="meter-select">
+                        <option value="electricity">Electricity Meter</option>
+                        <option value="water">Water Meter</option>
+                        <option value="gas">Gas Meter</option>
+                    </select>
+                </div>
+
+                <div class="cards-container">
+                    <div class="card card-blue">
+                        <h3>Rs. <span id="dashPayable">0</span></h3>
+                        <p>Total Amount Payable</p>
+                    </div>
+                    <div class="card card-pink">
+                        <h3>Rs. <span id="dashLastBill">0</span></h3>
+                        <p>Last Month Bill</p>
+                    </div>
+                    <div id="cardStatus" class="card card-green">
+                        <h3><span id="dashStatus">Active</span></h3>
+                        <p>Meter status</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btnPayBill" class="btn-dark">Pay Bill</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="viewHistory" class="view-section hidden">
+            <div class="section-header">
+                <h2 id="historyTitle">History</h2>
+                <select class="meter-select">
+                    <option value="electricity">Electricity Meter</option>
+                    <option value="water">Water Meter</option>
+                    <option value="gas">Gas Meter</option>
                 </select>
             </div>
 
-            <div class="row g-4 pe-5">
-                <div class="col-4"><div class="detail-card pay"><strong>Rs. 0.00</strong><br>Total Amount Payable</div></div>
-                <div class="col-4"><div class="detail-card lastbill"><strong>Rs. 0.00</strong><br>Last Month Bill</div></div>
-                <div class="col-4"><div class="detail-card status" id="meterStatusCard"><strong>Unknown</strong><br>Meter status</div></div>
-            </div>
-
-            <div class="mt-4 d-flex gap-3">
-                <button class="btn action-btn" data-bs-toggle="modal" data-bs-target="#paymentModal">Pay Bill</button>
-                <button class="btn custom-blue-btn px-4 py-2">Generate Customer Bill</button>
-                <button class="btn action-btn" onclick="showView('usage-history')">Customer Usage History</button>
-            </div>
-        </section>
-
-        <section id="payment-history" class="view-section d-none">
-            <div class="d-flex justify-content-between align-items-center mb-2 pe-5">
-                <h4 class="fw-bold">Payment History</h4>
-                <button class="btn meter-btn">Electricity Meter ▼</button>
-            </div>
-            <div class="table-wrapper me-5">
-                <table class="table align-middle custom-table line-table">
+            <div class="table-container">
+                <table>
                     <thead>
-                        <tr class="fw-semibold">
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Payment Date</th>
-                            <th>Total Units Used</th>
-                            <th>Total Bill</th>
-                            <th>Total Payed</th>
-                            <th>Status</th>
-                        </tr>
+                    <tr id="tableHeadRow">
+                    </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>03/06/2025</td>
-                            <td>03/07/2025</td>
-                            <td>03/06/2025</td>
-                            <td><span class="badge bg-danger text-white rounded-pill">30,000</span></td>
-                            <td>Rs. 15,000</td>
-                            <td>Rs. 15,000</td>
-                            <td><span class="status-complete">Complete</span></td>
-                        </tr>
-                        <tr>
-                            <td>03/05/2025</td>
-                            <td>03/06/2025</td>
-                            <td>03/06/2025</td>
-                            <td><span class="badge bg-danger text-white rounded-pill">30,000</span></td>
-                            <td>Rs. 14,000</td>
-                            <td>Rs. 13,000</td>
-                            <td><span class="status-pending">Pending</span></td>
-                        </tr>
+                    <tbody id="tableBody">
                     </tbody>
                 </table>
             </div>
-        </section>
+        </div>
 
-        <section id="usage-history" class="view-section d-none">
-            <div class="d-flex justify-content-between align-items-center mb-2 pe-5">
-                <h4 class="fw-bold">Usage History</h4>
-                <select class="form-select w-auto meter-select">
-                    <option>Electricity Meter</option>
-                    <option>Water Meter</option>
-                    <option>Gas Meter</option>
-                </select>
-            </div>
-            <div class="table-box me-5">
-                <table class="table table-borderless align-middle custom-table">
-                    <thead>
-                        <tr>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Total Units Used</th>
-                            <th>Total Bill</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>03/05/2025</td>
-                            <td>03/06/2025</td>
-                            <td><span class="badge-pink">10,000</span></td>
-                            <td><span class="badge-green">Rs. 13,000</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
     </main>
 </div>
 
-<div class="modal fade" id="paymentModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content payment-modal-content">
-            <div class="modal-header border-0 justify-content-end">
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <h4 class="text-center fw-bold">Payment Amount</h4>
-            <div class="payment-display-box mx-auto my-3">
-                <span>Rs.</span>
-                <input id="paymentModalAmount" type="number" step="0.01" class="form-control text-center" style="background:transparent; border:none; font-size:1.4rem;">
-            </div>
-            <div class="d-flex justify-content-center gap-4 mt-3 pb-4">
-                <button class="modal-pay-btn payment-btn" data-method="cash">Cash</button>
-                <button class="modal-pay-btn payment-btn" data-method="card">Card</button>
-            </div>
+<div id="modalAmount" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Payment Amount</h2>
+        <div class="input-display">
+            <input type="number" id="inputPaymentAmount" placeholder="Rs. 0.00">
+        </div>
+
+        <h2>Payment Method</h2>
+        <div class="modal-actions">
+            <button id="btnMethodCash" class="btn-dark">Cash</button>
+            <button id="btnMethodCard" class="btn-dark">Card</button>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="cashPaymentModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background:#b7daf0; border-radius:20px; padding:20px;">
-            <div class="d-flex justify-content-end"><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <h4 class="text-center fw-bold mb-4">Cash Payment</h4>
-            <div class="px-4">
-                <div class="mb-2"><span class="fw-semibold">Amount Payable :</span> <span id="cashPayable">Rs. 0.00</span></div>
-                <div class="d-flex align-items-center mb-2 gap-2">
-                    <span class="fw-semibold">Amount Received :</span>
-                    <input id="cashReceivedInput" type="number" class="form-control text-center w-auto" style="border:none; border-radius:10px;">
-                    <button id="calculateReturnBtn" class="btn btn-dark btn-sm rounded-pill">Enter</button>
-                </div>
-                <div><span class="fw-semibold">Return Amount :</span> <span id="cashReturn">Rs. 0.00</span></div>
+<div id="modalCash" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Cash Payment</h2>
+
+        <div class="calc-row">
+            <label>Amount Payable :</label>
+            <span class="calc-val">Rs. <span id="calcPayable">0.00</span></span>
+        </div>
+        <div class="calc-row">
+            <label>Amount Received :</label>
+            <div class="calc-input-wrap">
+                Rs. <input type="number" id="inputCashReceived" placeholder="0.00">
             </div>
-            <div class="d-flex justify-content-center gap-3 mt-4 mb-2">
-                <button onclick="showView('payment-history')" data-bs-dismiss="modal" class="btn btn-dark px-4 py-2 rounded-pill">View Payment History</button>
-                <button class="btn btn-dark px-4 py-2 rounded-pill">Generate Receipt</button>
-            </div>
+        </div>
+        <div class="calc-row">
+            <label>Return Amount :</label>
+            <span class="calc-val">Rs. <span id="calcReturn">0.00</span></span>
+        </div>
+
+        <div class="modal-actions">
+            <button id="btnViewHistoryFromModal" class="btn-dark">View Payment History</button>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/cashier.js"></script>
 </body>
 </html>
