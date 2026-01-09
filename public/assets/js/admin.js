@@ -145,3 +145,76 @@ document.addEventListener('DOMContentLoaded', function() {
 
     switchTab('dashboard');
 });
+
+const CUSTOMER_API = "http://localhost/utility-system/api/customers.php";
+
+// 1. Function to Load Customers
+async function loadCustomers() {
+    try {
+        const response = await fetch(`${CUSTOMER_API}?action=list`);
+        const customers = await response.json();
+
+        // Make sure your HTML Table Body has id="customerTableBody"
+        const tableBody = document.getElementById('customerTableBody');
+        
+        if (tableBody) {
+            tableBody.innerHTML = ''; // Clear existing rows
+            customers.forEach(cust => {
+                const row = `<tr>
+                    <td>${cust.customer_id}</td>
+                    <td>${cust.full_name}</td>
+                    <td>${cust.address}</td>
+                    <td>${cust.phone}</td>
+                    <td>${cust.outstanding_balance}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+    } catch (error) {
+        console.error("Error loading customers:", error);
+    }
+}
+
+// 2. Listen for Form Submit (Add Customer)
+// Make sure your HTML Form has id="addCustomerForm"
+const addCustForm = document.getElementById('addCustomerForm');
+
+if (addCustForm) {
+    addCustForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get values from HTML inputs (Ensure IDs match these)
+        const name = document.getElementById('full_name').value;
+        const address = document.getElementById('address').value;
+        const phone = document.getElementById('phone').value;
+
+        try {
+            const response = await fetch(`${CUSTOMER_API}?action=add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    full_name: name,
+                    address: address,
+                    phone: phone
+                })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            
+            // Reload the table to show the new customer
+            loadCustomers(); 
+            
+            // Close the form using your existing function (if applicable)
+            if (window.hideForm) {
+                window.hideForm('add_customer'); 
+            }
+            
+        } catch (error) {
+            console.error("Error adding customer:", error);
+        }
+    });
+}
+
+// 3. Automatically load customers when page opens
+loadCustomers();
