@@ -11,6 +11,7 @@ const suggestionsList = document.getElementById('suggestions-list');
 const submitBtn = document.getElementById('submit-btn');
 
 const displayCustId = document.getElementById('info-cust-id');
+const displayCustName = document.getElementById('info-cust-name');
 const displayStatus = document.getElementById('info-status');
 const displayType = document.getElementById('info-type');
 
@@ -58,10 +59,13 @@ function selectMeter(meterId, meterNo) {
     fetch(`../api/readings.php?action=get_details&meter_id=${meterId}`)
     .then(res => res.json())
     .then(data => {
+        console.log("YOO WHY DOES THIS NOT WORK");
+        console.log("Server Response:", data);
         if(data.status === 'success') {
             const info = data.details;
             
-            displayCustId.textContent = info.customer_id + " (" + info.first_name + ")";
+            displayCustId.textContent = info.nic || "N/A";
+            displayCustName.textContent = (info.first_name || "") + " " + (info.last_name || "");
             displayStatus.textContent = info.status;
             displayType.textContent = info.utility_name || "Unknown";
 

@@ -42,7 +42,7 @@ if ($action === 'search') {
 elseif ($action === 'get_details') {
     $meter_id = $_GET['meter_id'] ?? 0;
 
-    $sqlInfo = "SELECT c.customer_id, c.first_name, c.last_name, m.status, u.name as utility_name 
+    $sqlInfo = "SELECT c.nic, c.first_name, c.last_name, m.status, u.name as utility_name 
                 FROM meter m
                 LEFT JOIN customer c ON m.customer_id = c.customer_id
                 LEFT JOIN tariff_group tg ON m.group_id = tg.group_id
