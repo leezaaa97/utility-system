@@ -1,296 +1,238 @@
-function switchView(viewId, element) {
-    // Hide all sections
-    const sections = document.querySelectorAll('.view-section');
-    sections.forEach(section => section.classList.add('hidden'));
+// manager.js - The Intelligence Hub Logic
+const API_BASE = '../api/ManagerMissingAPI.php';
 
-    // Show selected section
-    const selectedSection = document.getElementById(viewId);
-    if (selectedSection) {
-        selectedSection.classList.remove('hidden');
-    }
+// Global State Controller
+let state = {
+    utilityId: null,
+    currentYear: new Date().getFullYear(),
+    charts: {} // Store chart instances
+};
 
-    // Update Sidebar Active State
-    const navItems = document.querySelectorAll('.sidebar li');
-    navItems.forEach(item => item.classList.remove('active'));
-    
-    // If clicked from sidebar, add active class
-    if (element) {
-        element.classList.add('active');
-    } else {
-        // If switched programmatically, find the link and activate it
-        
-    }
-
-    // Trigger chart resize if needed
-    resizeCharts();
-}
-
-function logout() {
-    // API: /api/auth/logout
-    alert("Logging out...");
-}
-
-// Chart Initialization (Using Chart.js) 
-let charts = {};
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Initialize Dashboard Charts
-    initDashboardCharts();
-    
-    // Initialize Report Charts (placeholders)
-    initReportCharts();
-
-    // Populate Mock Data
-    populateDailyTable();
-    populateTopConsumersTable();
-    
-    // Initialize Export Center UI
-    populateExportDays();
+document.addEventListener('DOMContentLoaded', () => {
+    initDashboard();
 });
 
+async function initDashboard() {
+    // 1. Fetch Metadata (Utilities, Dates)
+    const res = await fetch(`${API_BASE}?action=get_init_data`);
+    const data = await res.json();
 
-function initDashboardCharts() {
-    // Daily Mini Chart
-    const ctxDaily = document.getElementById('miniChartDaily').getContext('2d');
-    new Chart(ctxDaily, {
-        type: 'bar',
-        data: {
-            labels: ['M','T','W','T','F','S','S'],
-            datasets: [{
-                data: [30, 45, 20, 50, 40, 60, 45],
-                backgroundColor: '#1F3A56',
-                borderRadius: 4
-            }]
-        },
-        options: { plugins: { legend: { display: false } }, scales: { x: {display:false}, y: {display:false} } }
-    });
+    if (data.status === 'success') {
+        populateUtilities(data.data.utilities);
+    }
 
-    // Monthly Mini Chart
-    const ctxMonthly = document.getElementById('miniChartMonthly').getContext('2d');
-    new Chart(ctxMonthly, {
-        type: 'bar',
-        data: {
-            labels: ['W1','W2','W3','W4'],
-            datasets: [{
-                data: [120, 190, 300, 250],
-                backgroundColor: '#1F3A56',
-                borderRadius: 4
-            }]
-        },
-        options: { plugins: { legend: { display: false } }, scales: { x: {display:false}, y: {display:false} } }
-    });
-
-    // Yearly Mini Chart
-    const ctxYearly = document.getElementById('miniChartYearly').getContext('2d');
-    new Chart(ctxYearly, {
-        type: 'bar',
-        data: {
-            labels: ['Q1','Q2','Q3','Q4'],
-            datasets: [{
-                data: [500, 600, 750, 800],
-                backgroundColor: '#1F3A56',
-                borderRadius: 4
-            }]
-        },
-        options: { plugins: { legend: { display: false } }, scales: { x: {display:false}, y: {display:false} } }
-    });
+    // 2. Set Default State (Select first utility)
+    const utilSelect = document.getElementById('globalUtilitySelect');
+    if (utilSelect.options.length > 0) {
+        state.utilityId = utilSelect.value;
+        updateGlobalState(); // Triggers initial load
+    }
 }
 
-function initReportCharts() {
-    // 1. Monthly Usage Trends (Multi-bar)
-    const ctxUsage = document.getElementById('monthlyUsageChart').getContext('2d');
-    charts.monthly = new Chart(ctxUsage, {
-        type: 'bar',
-        data: {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            datasets: [
-                { label: 'Electricity', data: [65, 59, 80, 81], backgroundColor: '#1F3A56' },
-                { label: 'Water', data: [28, 48, 40, 19], backgroundColor: '#2d86b8' },
-                { label: 'Gas', data: [15, 20, 10, 30], backgroundColor: '#aebcc6' }
-            ]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
+function populateUtilities(list) {
+    const select = document.getElementById('globalUtilitySelect');
+    if (!list || list.length === 0) {
+        select.innerHTML = '<option value="">No Utilities Found</option>';
+        return;
+    }
+
+    select.innerHTML = list.map(u =>
+        `<option value="${u.utility_id}">${u.name}</option>`
+    ).join('');
+}
+
+// THE STATE CONTROLLER
+async function updateGlobalState() {
+    const select = document.getElementById('globalUtilitySelect');
+    state.utilityId = select.value;
+
+    showNotification("Refreshing Dashboard...", "info");
+
+    await Promise.all([
+        loadAnalytics(),
+        loadCustomers(),
+        loadLogs()
+    ]);
+
+    showNotification("Dashboard Updated", "success");
+}
+
+// TAB 1: ANALYTICS
+async function loadAnalytics() {
+    const url = `${API_BASE}?action=get_analytics&utility_id=${state.utilityId}&year=${state.currentYear}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (json.status === 'success') {
+        const d = json.data;
+
+        // 1. KPIs
+        animateValue('kpi-daily', d.kpi.daily || 0, 'Rs. ');
+        animateValue('kpi-monthly', d.kpi.monthly || 0, 'Rs. ');
+        animateValue('kpi-active', d.kpi.active || 0, '');
+
+        // 2. Revenue Chart
+        renderRevenueChart(d.revenue_trend);
+
+        // 3. Top Consumers
+        renderTopConsumers(d.top_consumers);
+    }
+}
+
+function renderRevenueChart(data) {
+    const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+
+    if (state.charts.revenue) state.charts.revenue.destroy();
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const values = new Array(12).fill(0);
+    data.forEach(item => {
+        values[item.m - 1] = item.total;
     });
 
-    // 2. Annual Performance (Area)
-    const ctxAnnual = document.getElementById('annualAreaChart').getContext('2d');
-    charts.annual = new Chart(ctxAnnual, {
+    state.charts.revenue = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+            labels: months,
             datasets: [{
-                label: 'Growth',
-                data: [10, 25, 30, 28, 40, 45, 50, 55, 60, 62, 65, 70],
-                fill: true,
-                backgroundColor: 'rgba(31, 58, 86, 0.2)',
-                borderColor: '#1F3A56',
-                tension: 0.4
+                label: 'Revenue (LKR)',
+                data: values,
+                borderColor: '#4F46E5',
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                tension: 0.4,
+                fill: true
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
-    });
-
-    // 3. Top Consumer (User Consumption)
-    const ctxUser = document.getElementById('userConsumptionChart').getContext('2d');
-    charts.user = new Chart(ctxUser, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-            datasets: [{
-                label: 'Usage',
-                data: [120, 150, 100, 180],
-                backgroundColor: '#667',
-            }]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Critical for fixed height container
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
     });
 }
 
-// Data & Table Functions 
-
-function generateDailyReport() {
-    const date = document.getElementById('dailyDate').value;
-    alert(`Fetching data for ${date || 'today'}...`);
-    populateDailyTable(); 
-}
-
-function populateDailyTable() {
-    const tbody = document.getElementById('dailyRevenueTable');
-    tbody.innerHTML = '';
-    
-    // Mock Data
-    const data = [
-        { nic: '987654321V', type: 'Domestic', utility: 'Electricity', meter: 'E-1023', rate: '35.00', total: '4500.00' },
-        { nic: '123456789V', type: 'Industrial', utility: 'Water', meter: 'W-9921', rate: '20.00', total: '2100.00' },
-        { nic: '456123789V', type: 'Domestic', utility: 'Gas', meter: 'G-3321', rate: '40.00', total: '1200.00' },
-    ];
-
-    data.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${row.nic}</td>
-            <td>${row.type}</td>
-            <td>${row.utility}</td>
-            <td>${row.meter}</td>
-            <td>${row.rate}</td>
-            <td>${row.total}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function fetchTopConsumers() {
-    alert("Updating Top Consumers List...");
-    populateTopConsumersTable();
-}
-
-function populateTopConsumersTable() {
-    const tbody = document.getElementById('topConsumersTable');
-    tbody.innerHTML = '';
-    
-    const data = [
-        { rank: 1, nic: '88221133V', cat: 'Industrial', contact: '077-1234567', units: 5000 },
-        { rank: 2, nic: '99112244V', cat: 'Commercial', contact: '071-9876543', units: 4200 },
-        { rank: 3, nic: '11223344V', cat: 'Domestic', contact: '075-5555555', units: 3100 },
-    ];
-
-    data.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>#${row.rank}</td>
-            <td>${row.nic}</td>
-            <td>${row.cat}</td>
-            <td>${row.contact}</td>
-            <td>${row.units}</td>
-            <td><button class="btn-primary" style="font-size:0.7rem; padding: 0.3rem 0.6rem;">View</button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// EXPORT CENTER 
-
-// 1. Day Dropdown Logic (1-31)
-function populateExportDays() {
-    const daySelect = document.getElementById('exportDay');
-    if(!daySelect) return;
-
-    daySelect.innerHTML = '<option value="">Select Day</option>';
-    for (let i = 1; i <= 31; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.innerText = i;
-        daySelect.appendChild(option);
-    }
-}
-
-// 2. Year Widget Logic
-function toggleYearWidget() {
-    const popup = document.getElementById('yearWidgetPopup');
-    popup.classList.toggle('hidden');
-}
-
-function selectYear(year) {
-    document.querySelectorAll('.year-option').forEach(el => el.classList.remove('selected'));
-    event.target.classList.add('selected');
-    document.getElementById('selectedYearDisplay').innerText = year;
-}
-
-// Close widget if clicking outside
-document.addEventListener('click', function(event) {
-    const wrapper = document.querySelector('.year-widget-wrapper');
-    const popup = document.getElementById('yearWidgetPopup');
-    if (wrapper && !wrapper.contains(event.target) && !popup.classList.contains('hidden')) {
-        popup.classList.add('hidden');
-    }
-});
-
-// 3. Redirection Logic (Report -> Export)
-function redirectToExport(reportType) {
-    // Switch View
-    switchView('export-center');
-
-    // Pre-fill Report Type
-    const typeSelect = document.getElementById('exportReportType');
-    if (typeSelect) {
-        typeSelect.value = reportType;
-        updateExportPreview();
-    }
-    
-    // Scroll to top
-    document.querySelector('.main-content').scrollTop = 0;
-}
-
-// 4. Update Preview Text
-function updateExportPreview() {
-    const type = document.getElementById('exportReportType').value;
-    const previewText = document.getElementById('previewText');
-    const previewBox = document.querySelector('.export-preview-box');
-    
-    if (type) {
-        previewText.innerText = `Previewing: ${type} Report`;
-        previewBox.style.backgroundColor = "#dce6ed"; 
-    }
-}
-
-// 5. Trigger Export
-function triggerExport() {
-    const type = document.getElementById('exportReportType').value;
-    const year = document.getElementById('selectedYearDisplay').innerText;
-    
-    if(!type || type === "Select Type") {
-        alert("Please select a Report Type first.");
+// Top Consumers Renderer (List Item Style)
+function renderTopConsumers(list) {
+    const container = document.getElementById('top-consumers-list');
+    if (!list || list.length === 0) {
+        container.innerHTML = '<div style="padding:20px; color:#999; text-align:center;">No Data Available</div>';
         return;
     }
 
-    alert(`Exporting ${type} (Year: ${year})... Downloading now.`);
+    container.innerHTML = list.map((c, index) => `
+        <div class="consumer-list-item">
+            <div class="rank-badge">${index + 1}</div>
+            <div class="consumer-info">
+                <div class="consumer-name">${c.first_name} ${c.last_name}</div>
+                <div class="consumer-meta"><i class="ph ph-gauge"></i> ${c.meter_no}</div>
+            </div>
+            <div class="consumer-amount">Rs. ${Number(c.total_paid).toLocaleString()}</div>
+        </div>
+    `).join('');
 }
 
-// Resize canvas when tab switches
-function resizeCharts() {
-    Object.values(charts).forEach(chart => chart.resize());
+
+// TAB 2: CUSTOMERS
+async function loadCustomers() {
+    const res = await fetch(`${API_BASE}?action=get_customers&utility_id=${state.utilityId}`);
+    const json = await res.json();
+
+    const tbody = document.getElementById('customer-table-body');
+    if (json.status === 'success' && json.data.length > 0) {
+        tbody.innerHTML = json.data.slice(0, 50).map(c => `
+            <tr>
+                <td>${c.nic}</td>
+                <td>${c.first_name} ${c.last_name}</td>
+                <td>${c.meter_no || '-'}</td>
+                <td>${c.utility || '-'}</td>
+                <td><span class="badge ${c.status === 'Active' ? 'success' : 'warn'}">${c.status || 'N/A'}</span></td>
+            </tr>
+        `).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="5">No Customers Found</td></tr>';
+    }
 }
+
+// TAB 3: LOGS Renderer (Activity Feed Style)
+async function loadLogs() {
+    const res = await fetch(`${API_BASE}?action=get_logs&utility_id=${state.utilityId}`);
+    const json = await res.json();
+
+    if (json.status === 'success') {
+        const faults = document.getElementById('fault-log-list');
+        faults.className = 'log-feed';
+        faults.innerHTML = json.data.faults.map(f => `
+            <div class="log-item fault">
+                <div class="log-icon"><i class="ph ph-warning-octagon"></i></div>
+                <div class="log-content">
+                    <div class="log-header">
+                        <span class="log-title">Fault Report</span>
+                        <span class="log-time">${f.report_date}</span>
+                    </div>
+                    <div class="log-desc">Meter <b>${f.meter_no}</b>: ${f.description}</div>
+                    <div style="margin-top:5px;">
+                        <span class="status-badge ${f.status === 'Resolved' ? 'status-resolved' : 'status-pending'}">${f.status}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        const payments = document.getElementById('payment-log-list');
+        payments.className = 'log-feed';
+        payments.innerHTML = json.data.payments.map(p => `
+             <div class="log-item payment">
+                <div class="log-icon"><i class="ph ph-receipt"></i></div>
+                <div class="log-content">
+                    <div class="log-header">
+                        <span class="log-title">Payment Received</span>
+                        <span class="log-time">${p.payment_date}</span>
+                    </div>
+                    <div class="log-desc">Meter <b>${p.meter_no}</b></div>
+                    <div style="margin-top:5px;">
+                        <span class="status-badge status-paid">Rs. ${Number(p.amount).toLocaleString()}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// PDF REPORTING
+window.generateReport = function (type) {
+    const url = `${API_BASE}?action=generate_report&type=${type}&utility_id=${state.utilityId}`;
+    window.open(url, '_blank');
+};
+
+// UI UTILS
+window.switchTab = function (tabId) {
+    // Nav Active
+    document.querySelectorAll('.nav-link-custom').forEach(el => el.classList.remove('active'));
+    // Simple Active Toggle
+    event.currentTarget.classList.add('active');
+
+    // Content Active
+    document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+};
+
+function animateValue(id, value, prefix = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerText = prefix + Number(value).toLocaleString();
+}
+
+window.showNotification = function (msg, type) {
+    const area = document.getElementById('notification-area');
+    const note = document.createElement('div');
+    note.className = 'toast';
+    note.innerHTML = `<i class="ph ph-${type === 'success' ? 'check-circle' : 'info'}"></i> ${msg}`;
+    area.appendChild(note);
+    setTimeout(() => note.remove(), 4000);
+}
+
+window.logout = function () {
+    showNotification("Logging out...", "info");
+    setTimeout(() => window.location.href = '../index.html', 1000);
+};
