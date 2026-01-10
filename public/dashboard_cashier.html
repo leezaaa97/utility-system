@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,141 +8,118 @@
     <link rel="stylesheet" href="assets/css/cashier.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="container">
-    <aside class="sidebar">
-        <h1 class="logo">DASH</h1>
+    <div class="container">
+        <aside class="sidebar">
+            <h1 class="logo">DASH</h1>
 
-        <nav class="sidebar-nav">
-            <div class="nav-item active" id="navIdentify">CUSTOMER DASHBOARD</div>
-            <div class="nav-item" id="navPaymentHist">PAYMENT HISTORY</div>
-            <div class="nav-item" id="navUsageHist">USAGE HISTORY</div>
-        </nav>
-    </aside>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" id="navIdentify">CUSTOMER DASHBOARD</div>
+                <div class="nav-item" id="navPaymentHist">PAYMENT HISTORY</div>
+                <div class="nav-item" id="navUsageHist">USAGE HISTORY</div>
+            </nav>
+            <a class="nav-item logout"
+                style="cursor: pointer; margin-top: auto; display: block; padding: 15px 20px; color: #fff; text-decoration: none;"><i
+                    class="fas fa-sign-out-alt"></i> LOG OUT</a>
+        </aside>
 
-    <main class="main-content">
+        <main class="main-content">
 
-        <header>
+            <header>
 
-        </header>
+            </header>
 
-        <section class="customer-ident">
-            <h2>Customer Identification</h2>
+            <section class="customer-ident">
+                <h2>Customer Identification</h2>
 
-            <div class="search-box">
-                <p>To generate customer details please enter the following details</p>
-                <div class="input-group">
-                    <input type="text" id="custNicInput" placeholder="Customer NIC">
-                    <button id="btnGetDetails" class="btn-primary">Get Customer Details</button>
+                <div class="search-box">
+                    <p>To generate customer details please enter the following details</p>
+                    <div class="input-group">
+                        <input type="text" id="custNicInput" placeholder="Customer NIC">
+                        <button id="btnGetDetails" class="btn-primary">Get Customer Details</button>
+                    </div>
+                </div>
+
+                <div id="customerInfoDisplay" class="customer-info">
+                    <p><strong>Customer NIC:</strong> <span id="dispCustNic">-</span></p>
+                    <p><strong>Address:</strong> <span id="dispCustAddr">-</span></p>
+                </div>
+            </section>
+
+            <div id="viewDashboard" class="view-section">
+                <div class="details-section">
+                    <div class="section-header">
+                        <h2>Customer Details</h2>
+                        <select id="inputUtilityType" class="meter-select">
+                            <option value="" disabled selected>Loading...</option>
+                        </select>
+                    </div>
+
+                    <div class="cards-container">
+                        <div class="card card-blue">
+                            <h3>Rs. <span id="dashPayable">0</span></h3>
+                            <p>Total Amount Payable</p>
+                        </div>
+                        <div class="card card-pink">
+                            <h3>Rs. <span id="dashLastBill">0</span></h3>
+                            <p>Last Month Bill</p>
+                        </div>
+                        <div id="cardStatus" class="card card-green">
+                            <h3><span id="dashStatus">Active</span></h3>
+                            <p>Meter status</p>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btnPayBill" class="btn-dark">Pay Bill</button>
+                    </div>
                 </div>
             </div>
 
-            <div id="customerInfoDisplay" class="customer-info">
-                <p><strong>Customer NIC:</strong> <span id="dispCustNic">-</span></p>
-                <p><strong>Address:</strong> <span id="dispCustAddr">-</span></p>
-            </div>
-        </section>
-
-        <div id="viewDashboard" class="view-section">
-            <div class="details-section">
+            <div id="viewHistory" class="view-section hidden">
                 <div class="section-header">
-                    <h2>Customer Details</h2>
-                    <select class="meter-select">
-                        <option value="electricity">Electricity Meter</option>
-                        <option value="water">Water Meter</option>
-                        <option value="gas">Gas Meter</option>
+                    <h2 id="historyTitle">History</h2>
+                    <select id="historyUtilityType" class="meter-select">
+                        <option value="" disabled selected>Loading...</option>
                     </select>
                 </div>
 
-                <div class="cards-container">
-                    <div class="card card-blue">
-                        <h3>Rs. <span id="dashPayable">0</span></h3>
-                        <p>Total Amount Payable</p>
-                    </div>
-                    <div class="card card-pink">
-                        <h3>Rs. <span id="dashLastBill">0</span></h3>
-                        <p>Last Month Bill</p>
-                    </div>
-                    <div id="cardStatus" class="card card-green">
-                        <h3><span id="dashStatus">Active</span></h3>
-                        <p>Meter status</p>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    <button id="btnPayBill" class="btn-dark">Pay Bill</button>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr id="tableHeadRow">
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
 
-        <div id="viewHistory" class="view-section hidden">
-            <div class="section-header">
-                <h2 id="historyTitle">History</h2>
-                <select class="meter-select">
-                    <option value="electricity">Electricity Meter</option>
-                    <option value="water">Water Meter</option>
-                    <option value="gas">Gas Meter</option>
-                </select>
+        </main>
+    </div>
+
+    <div id="modalAmount" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Confirm Payment</h2>
+            <div class="input-display">
+                <label>Amount to Pay (Rs.)</label>
+                <input type="number" id="inputPaymentAmount" placeholder="Rs. 0.00" readonly
+                    style="background-color: #f0f0f0; cursor: not-allowed;">
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                    <tr id="tableHeadRow">
-                    </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
+            <div class="modal-actions">
+                <button id="btnConfirmPayment" class="btn-dark">Confirm & Process</button>
             </div>
-        </div>
-
-    </main>
-</div>
-
-<div id="modalAmount" class="modal hidden">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Payment Amount</h2>
-        <div class="input-display">
-            <input type="number" id="inputPaymentAmount" placeholder="Rs. 0.00">
-        </div>
-
-        <h2>Payment Method</h2>
-        <div class="modal-actions">
-            <button id="btnMethodCash" class="btn-dark">Cash</button>
-            <button id="btnMethodCard" class="btn-dark">Card</button>
         </div>
     </div>
-</div>
 
-<div id="modalCash" class="modal hidden">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Cash Payment</h2>
 
-        <div class="calc-row">
-            <label>Amount Payable :</label>
-            <span class="calc-val">Rs. <span id="calcPayable">0.00</span></span>
-        </div>
-        <div class="calc-row">
-            <label>Amount Received :</label>
-            <div class="calc-input-wrap">
-                Rs. <input type="number" id="inputCashReceived" placeholder="0.00">
-            </div>
-        </div>
-        <div class="calc-row">
-            <label>Return Amount :</label>
-            <span class="calc-val">Rs. <span id="calcReturn">0.00</span></span>
-        </div>
-
-        <div class="modal-actions">
-            <button id="btnViewHistoryFromModal" class="btn-dark">View Payment History</button>
-        </div>
-    </div>
-</div>
-
-<script src="assets/js/cashier.js"></script>
+    <div id="toast-container"></div>
+    <script src="assets/js/cashier.js"></script>
 </body>
+
 </html>
