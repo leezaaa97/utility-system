@@ -42,7 +42,7 @@ if (logoutBtn) {
             showNotification('Logging out...', 'success');
 
             // Perform logout in background
-            await apiFetch('../api/auth.php?action=logout');
+            await fetch('../api/auth.php?action=logout');
 
             // Short delay to let user see the message before redirect
             setTimeout(() => {
