@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+
+<body>
+
+    <div class="d-flex">
+        <div class="sidebar-container">
+            <h4 class="sidebar-brand">DASH</h4>
+            <ul class="nav nav-pills flex-column" id="adminTabs">
+                <li class="nav-item">
+                    <a class="nav-link-custom active" data-tab-id="dashboard" href="#dashboard-tab">DASHBOARD</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" data-tab-id="customers" href="#customers-tab">CUSTOMERS</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" data-tab-id="meters" href="#meters-tab">METERS</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-custom" data-tab-id="tariffs" href="#tariffs-tab">TARIFFS</a>
+                </li>
+            </ul>
+            <a class="nav-link-custom logout">LOG OUT</a>
+        </div>
+
+        <div class="main-content-wrapper">
+            <div class="tab-content" id="v-pills-tabContent">
+
+                <div class="tab-pane fade show active" id="dashboard-tab" role="tabpanel">
+                    <div class="admin-quick-search mb-4 d-flex align-items-center">
+                        <input type="text" id="dashboard-quick-search-input" class="form-control"
+                            placeholder="Quick Search"
+                            style="width: 350px; height: 45px; border-radius: 50px 0 0 50px; border: none; font-style: italic; padding: 10px 20px;">
+                        <button class="btn btn-primary" onclick="quickTabSearch()"
+                            style="height: 45px; border-radius: 0 50px 50px 0; background: #237FAC; border: none;">
+                            Search
+                        </button>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-lg-4">
+                            <div class="info-card customers mb-3">
+                                <div class="card-content">
+                                    <h3 id="stat-total-customers">...</h3>
+                                    <p>Total Customers</p>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="info-card meters mb-3">
+                                <div class="card-content">
+                                    <h3 id="stat-active-meters">...</h3>
+                                    <p>Active Meters</p>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="info-card tariffs mb-3">
+                                <div class="card-content">
+                                    <h3 id="stat-tariff-plans">...</h3>
+                                    <p>Active Tariffs</p>
+                                </div>
+                                <div class="card-icon">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-access-area">
+                        <h4 style="font-weight: 700; font-size: 32px; margin-bottom: 20px;">Quick Access</h4>
+                        <button class="btn quick-access-btn me-4" onclick="quickAccess('customers', 'add-new-user')">Add
+                            Customer</button>
+                        <button class="btn quick-access-btn" onclick="quickAccess('customers', 'assign-meter')">Assign
+                            Meter</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="customers-tab" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="dash-title mb-0">Customers</h2>
+                        <button class="btn btn-add-entity" onclick="showForm('add-new-user')">+ Add New User</button>
+                    </div>
+
+                    <div class="row align-items-center mb-4 filter-input-group">
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <input type="text" id="search-id-name" class="form-control" placeholder="Search by ID/Name">
+                        </div>
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <select id="filter-customer-type" class="form-select" onchange="filterData()">
+                                <option selected>Filter by Customer Type</option>
+                                <option value="Domestic">Domestic</option>
+                                <option value="Commercial">Commercial</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex justify-content-end">
+                            <button class="btn btn-search me-2" onclick="searchData()">Search</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">NIC</th>
+                                    <th scope="col">Email Address</th>
+                                    <th scope="col">Contact No.</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="custTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="meters-tab" role="tabpanel">
+                    <h2 class="dash-title">Meters</h2>
+                    <div class="row my-3 filter-input-group">
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <select id="sort-meter-utility" class="form-select" onchange="sortMeterData()">
+                                <option selected>Sort by Utility Type</option>
+                                <option value="Electricity">Electricity</option>
+                                <option value="Water">Water</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="sort-meter-status" class="form-select" onchange="sortMeterData()">
+                                <option selected>Sort by Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Faulty">Faulty</option>
+                                <option value="Pending Inst">Pending Inst</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Meter ID</th>
+                                    <th scope="col">Customer NIC</th>
+                                    <th scope="col">Utility Type</th>
+                                    <th scope="col" class="text-center">Status</th>
+                                    <th scope="col">Last Read Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="meterTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tariffs-tab" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="dash-title mb-0">Tariff Management</h2>
+                        <button class="btn btn-add-entity" onclick="opengroupForm('add')">+ Add Tariff Group</button>
+                    </div>
+
+                    <div class="row">
+                        <!-- Master Panel: Groups -->
+                        <div class="col-md-4">
+                            <div class="card"
+                                style="border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                                <div class="card-header bg-white"
+                                    style="border-bottom: 2px solid #f0f0f0; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0" style="font-weight: 600;">Tariff Groups</h5>
+                                </div>
+                                <div class="list-group list-group-flush" id="tariff-groups-list"
+                                    style="max-height: 600px; overflow-y: auto;">
+                                    <!-- Dynamic Items -->
+                                    <div class="text-center p-3 text-muted">Loading groups...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detail Panel: Slabs -->
+                        <div class="col-md-8">
+                            <div class="card"
+                                style="border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); min-height: 400px;">
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center"
+                                    style="border-bottom: 2px solid #f0f0f0; border-radius: 15px 15px 0 0;">
+                                    <div>
+                                        <h5 class="mb-0" id="active-group-header" style="font-weight: 600;">Select a
+                                            Group</h5>
+                                        <small class="text-muted" id="active-group-meta"></small>
+                                    </div>
+                                    <div id="active-group-actions" style="display:none;">
+                                        <button class="btn btn-sm btn-outline-primary me-2"
+                                            onclick="editActiveGroup()">Edit Group</button>
+                                        <button class="btn btn-sm btn-outline-danger me-2"
+                                            onclick="deleteActiveGroup()">Delete Group</button>
+                                        <button class="btn btn-sm btn-primary" onclick="openslabForm('add')">+ Add
+                                            Slab</button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <table class="table table-hover mb-0">
+                                        <thead style="background-color: #f8f9fa;">
+                                            <tr>
+                                                <th scope="col" class="ps-4">Range (Units)</th>
+                                                <th scope="col">Unit Price</th>
+                                                <th scope="col" class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="slabs-tbody">
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted p-5">Select a tariff group
+                                                    from the left to view slabs.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-new-user-form" class="overlay-form">
+        <button class="close-btn" onclick="hideForm('add-new-user')">X</button>
+        <h5 class="mb-3 dash-title" style="font-size: 24px;">Add New User</h5>
+        <form id="add-user-form-submit">
+            <div class="mb-3">
+                <label class="form-input-label">Name</label>
+                <input type="text" id="add-user-name" class="form-control form-control-dash"
+                    placeholder="Enter Full Name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">NIC</label>
+                <input type="text" id="add-user-nic" class="form-control form-control-dash" placeholder="Enter NIC"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Email Address</label>
+                <input type="email" id="add-user-email" class="form-control form-control-dash" placeholder="Enter Email"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Contact No.</label>
+                <input type="text" id="add-user-phone" class="form-control form-control-dash"
+                    placeholder="Enter Contact Number" required>
+            </div>
+            <div class="mb-3">
+            <label class="form-input-label">Address</label>
+            <textarea id="add-user-address" class="form-control form-control-dash" placeholder="Enter Full Address" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label class="form-input-label">Type</label>
+                <select id="add-user-type" class="form-control form-control-dash" required>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn form-btn-submit">+ Add New User</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="assign-meter-form" class="overlay-form">
+        <button class="close-btn" onclick="hideForm('assign-meter')">X</button>
+        <h5 class="mb-4 dash-title" style="font-size: 24px; text-align: center;">Assign Meter</h5>
+        <form>
+            <input type="hidden" id="assign-customer-id">
+            <div class="mb-3">
+                <label class="form-input-label">Utility Type</label>
+                <select id="assign-meter-utility" class="form-control form-control-dash">
+                    <option value="Electricity">Electricity</option>
+                    <option value="Water">Water</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Customer NIC</label>
+                <input type="text" id="assign-meter-nic" class="form-control form-control-dash"
+                    placeholder="Enter Customer NIC">
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Meter Serial Number</label>
+                <input type="text" id="assign-meter-sn" class="form-control form-control-dash"
+                    placeholder="Enter Meter SN">
+            </div>
+            <div class="mb-4">
+                <label class="form-input-label">Installation Date</label>
+                <input type="date" id="assign-meter-date" class="form-control form-control-dash"
+                    placeholder="mm/dd/yyyy">
+            </div>
+            <div class="d-flex justify-content-center flex-column align-items-center">
+                <button type="button" id="btn-view-meters" class="btn form-btn-submit">View Meters</button>
+                <button type="submit" id="btn-assign-meter" class="btn form-btn-submit">Assign Meter</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="edit-customer-form" class="overlay-form">
+        <button class="close-btn" onclick="hideForm('edit-customer')">X</button>
+        <h5 class="mb-3 dash-title" style="font-size: 24px;">Edit Customer Details</h5>
+        <form id="edit-customer-form-submit">
+            <input type="hidden" id="edit-customer-id">
+            <div class="mb-3">
+                <label class="form-input-label">Name</label>
+                <input type="text" id="edit-name" class="form-control form-control-dash" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">NIC</label>
+                <input type="text" id="edit-nic" class="form-control form-control-dash" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Email Address</label>
+                <input type="email" id="edit-email" class="form-control form-control-dash" required>
+            </div>
+            <div class="mb-3">
+            <label class="form-input-label">Address</label>
+            <textarea id="edit-address" class="form-control form-control-dash" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Contact No.</label>
+                <input type="text" id="edit-contact" class="form-control form-control-dash" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-input-label">Type</label>
+                <select id="edit-type" class="form-control form-control-dash" required>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn form-btn-submit" style="background: #008000;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="tariff-group-form" class="overlay-form">
+        <button class="close-btn" onclick="hideForm('tariff-group')">X</button>
+        <h5 class="mb-3 dash-title" id="tariff-group-title">Add Tariff Group</h5>
+        <form id="tariff-group-form-submit">
+            <input type="hidden" id="tg-id">
+            <div class="mb-3">
+                <label class="form-input-label">Group Name</label>
+                <input type="text" id="tg-name" class="form-control form-control-dash" placeholder="e.g. Domestic 2025"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Fixed Charge</label>
+                <input type="number" id="tg-fixed" class="form-control form-control-dash" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Utility Type</label>
+                <select id="tg-utility-select" class="form-control form-control-dash" required>
+                    <option value="" disabled selected>Select Utility...</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn form-btn-submit">Save Group</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="tariff-slab-form" class="overlay-form">
+        <button class="close-btn" onclick="hideForm('tariff-slab')">X</button>
+        <h5 class="mb-3 dash-title" id="tariff-slab-title">Add Tariff Slab</h5>
+        <form id="tariff-slab-form-submit">
+            <input type="hidden" id="ts-id">
+            <input type="hidden" id="ts-group-id">
+            <div class="row mb-3">
+                <div class="col-6">
+                    <label class="form-input-label">Min Units</label>
+                    <input type="number" id="ts-min" class="form-control form-control-dash" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-input-label">Max Units</label>
+                    <input type="number" id="ts-max" class="form-control form-control-dash" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Unit Price</label>
+                <input type="number" id="ts-price" class="form-control form-control-dash" step="0.01" required>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn form-btn-submit">Save Slab</button>
+            </div>
+        </form>
+    </div>
+
+
+    <div id="disable-editing-modal" class="tariff-dialog-box" style="display: none;">
+        <button class="close-btn" onclick="hideForm('modify')">X</button>
+        <h5 class="mb-4">Do you want to disable editing on this slab?</h5>
+        <div class="d-flex justify-content-around">
+            <button class="btn btn-dialog-action yes" onclick="hideForm('modify')">Yes</button>
+            <button class="btn btn-dialog-action no" onclick="hideForm('modify')">No</button>
+        </div>
+    </div>
+
+    <div id="edit-meter-form" class="overlay-form">
+        <button class="close-btn" onclick="hideForm('edit-meter')">X</button>
+        <h5 class="mb-3 dash-title" style="font-size: 24px;">Edit Meter</h5>
+        <form id="edit-meter-form-submit">
+            <input type="hidden" id="edit-meter-id">
+            <div class="mb-3">
+                <label class="form-input-label">Meter Serial No</label>
+                <input type="text" id="edit-meter-sn" class="form-control form-control-dash" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-input-label">Status</label>
+                <select id="edit-meter-status" class="form-control form-control-dash">
+                    <option value="Active">Active</option>
+                    <option value="Faulty">Faulty</option>
+                    <option value="Disconnected">Disconnected</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn form-btn-submit" style="background: #008000;">Update Meter</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <script src="assets/js/admin.js?v=1.09"></script>
+</body>
+
+</html>
