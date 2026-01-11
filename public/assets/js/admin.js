@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 nic: document.getElementById('add-user-nic').value,
                 email: document.getElementById('add-user-email').value,
                 phone: document.getElementById('add-user-phone').value,
-                address: "N/A" // Address input missing in form, sending default
+                address: document.getElementById('add-user-address').value
             };
 
             const res = await apiFetch('../api/customers.php', {
@@ -784,6 +784,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('edit-nic').value = custData.nic;
             document.getElementById('edit-email').value = custData.email;
             document.getElementById('edit-contact').value = custData.phone;
+            document.getElementById('edit-address').value = custData.address || '';
             // Set Type Dropdown (if loaded)
             const typeDropdown = document.getElementById('edit-type');
             if (typeDropdown) {
@@ -818,7 +819,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 nic: document.getElementById('edit-nic').value,
                 email: document.getElementById('edit-email').value,
                 phone: document.getElementById('edit-contact').value,
-                address: "N/A",
+                address: document.getElementById('edit-address').value,
                 type_id: document.getElementById('edit-type') ? document.getElementById('edit-type').value : null
             };
 
