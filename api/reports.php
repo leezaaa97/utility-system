@@ -21,5 +21,4 @@ if ($type == 'top_consumers') {
             ORDER BY total_units DESC";
     echo json_encode($conn->query($sql)->fetchAll(PDO::FETCH_ASSOC));
 }
-// Add Monthly/Yearly logic similarly
 ?>
