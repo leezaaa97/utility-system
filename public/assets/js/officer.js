@@ -1,3 +1,6 @@
+console.log("Officer dashboard JS loaded.");
+
+
 // --- HELPER: Notification System ---
 window.showNotification = function (message, type = 'info') {
     const container = document.getElementById('toast-container');
@@ -42,7 +45,7 @@ if (logoutBtn) {
             showNotification('Logging out...', 'success');
 
             // Perform logout in background
-            await apiFetch('../api/auth.php?action=logout');
+            await fetch('../api/auth.php?action=logout');
 
             // Short delay to let user see the message before redirect
             setTimeout(() => {
