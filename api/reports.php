@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 <?php
 session_start();
 header("Content-Type: application/json");
@@ -22,3 +24,4 @@ if ($type == 'top_consumers') {
     echo json_encode($conn->query($sql)->fetchAll(PDO::FETCH_ASSOC));
 }
 ?>
+>>>>>>> dev

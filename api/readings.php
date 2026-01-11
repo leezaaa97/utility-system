@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 <?php
 session_start();
 header("Content-Type: application/json");
@@ -229,3 +231,4 @@ elseif ($method === 'GET') {
     sendJson("error", "Invalid Action or Method");
 }
 ?>
+>>>>>>> dev
